@@ -2,7 +2,7 @@
  * @Description: 
  * @Date: 2020-06-29 09:42:24
  * @LastEditors: Astronautics across the sea of stars
- * @LastEditTime: 2020-07-01 10:42:07
+ * @LastEditTime: 2020-07-01 16:11:55
  */
 const express = require('express')
 const app = express()
@@ -356,6 +356,138 @@ app.get('/pdd_ddk_theme_goods_search', (req, res) => {
     }
     request.post(url, {
         formData: signFun(data),
+        json: true
+    }, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.send(body)
+        }
+    })
+})
+
+
+/**
+ * @desc 生成商城-频道推广链接
+ * @document https://open.pinduoduo.com/application/document/api?id=pdd.ddk.cms.prom.url.generate&permissionId=2
+ * @parameter 0, "1.9包邮"；1, "今日爆款"； 2, "品牌清仓"； 4,"PC端专属商城"；不传值为默认商城
+ */
+app.get('/pdd_ddk_cms_prom_url_generate', (req, res) => {
+    if (!req.query.type) { return res.send({ message: 'type 参数错误' }) }
+    let url = `https://gw-api.pinduoduo.com/api/router`;
+    let time = `${+(new Date())}`
+    let data = {
+        type: "pdd.ddk.cms.prom.url.generate",
+        timestamp: time,
+        client_id: client_id,
+        channel_type: req.query.type,
+        generate_mobile: 'true',
+        p_id_list: `["${PID}"]`,
+    }
+    request.post(url, {
+        formData: signFun(data),
+        json: true
+    }, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.send(body)
+        }
+    })
+})
+
+
+/**
+ * @desc 查询商品标签列表
+ * @document https://open.pinduoduo.com/application/document/api?id=pdd.goods.opt.get&permissionId=2
+ * @parameter 
+ */
+app.get('/pdd_goods_opt_get', (req, res) => {
+    let url = `https://gw-api.pinduoduo.com/api/router`;
+    let time = `${+(new Date())}`
+    let data = {
+        type: "pdd.goods.opt.get",
+        timestamp: time,
+        client_id: client_id,
+        parent_opt_id: 0
+    }
+    request.post(url, {
+        formData: signFun(data),
+        json: true
+    }, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.send(body)
+        }
+    })
+})
+
+
+
+/**
+ * @desc 多多进宝商品查询
+ * @document https://open.pinduoduo.com/application/document/api?id=pdd.ddk.goods.search&permissionId=2
+ * @parameter keyword = 搜索关键词
+ * sort_type 
+ * 排序方式:
+ * 0-综合排序;
+ * 1-按佣金比率升序;
+ * 2-按佣金比例降序;
+ * 3-按价格升序;
+ * 4-按价格降序;
+ * 5-按销量升序;
+ * 6-按销量降序;
+ * 7-优惠券金额排序升序;
+ * 8-优惠券金额排序降序;
+ * 9-券后价升序排序;
+ * 10-券后价降序排序;
+ * 11-按照加入多多进宝时间升序;
+ * 12-按照加入多多进宝时间降序;
+ * 13-按佣金金额升序排序;
+ * 14-按佣金金额降序排序;
+ * 15-店铺描述评分升序;
+ * 16-店铺描述评分降序;
+ * 17-店铺物流评分升序;
+ * 18-店铺物流评分降序;
+ * 19-店铺服务评分升序;
+ * 20-店铺服务评分降序;
+ * 27-描述评分击败同类店铺百分比升序，
+ * 28-描述评分击败同类店铺百分比降序，
+ * 29-物流评分击败同类店铺百分比升序，
+ * 30-物流评分击败同类店铺百分比降序，
+ * 31-服务评分击败同类店铺百分比升序，
+ * 32-服务评分击败同类店铺百分比降序
+ */
+app.get('/pdd_ddk_goods_search', (req, res) => {
+    if (!req.query.keyword) { return res.send({ message: 'keyword 参数错误' }) }
+    if (!req.query.page) { return res.send({ message: 'page 参数错误' }) }
+    let url = `https://gw-api.pinduoduo.com/api/router`;
+    let time = `${+(new Date())}`
+    let data = {
+        type: "pdd.ddk.goods.search",
+        timestamp: time,
+        client_id: client_id,
+        keyword: req.query.keyword,
+        with_coupon: 'true',
+        sort_type: 9,
+        page: req.query.page,
+        page_size: 30
+    }
+    request.post(url, {
+        formData: signFun(data),
+        json: true
+    }, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            res.send(body)
+        }
+    })
+})
+
+
+/**
+ * @desc 根据URL获取html文本
+ * @desc url
+ * */ 
+app.get('/url_html', (req, res) => {
+    if (!req.query.url) { return res.send({ message: 'url 参数错误' }) }
+    let url = req.query.url;
+    request.get(url, {
+        formData: {},
         json: true
     }, function (error, response, body) {
         if (!error && response.statusCode == 200) {
