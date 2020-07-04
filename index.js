@@ -2,14 +2,47 @@
  * @Description: 
  * @Date: 2020-06-29 09:42:24
  * @LastEditors: Astronautics across the sea of stars
- * @LastEditTime: 2020-07-01 16:11:55
+ * @LastEditTime: 2020-07-04 09:58:26
  */
 const express = require('express')
 const app = express()
-const port = 3000
+
 const request = require('request')
 var md5 = require('md5-node');
 
+var path = require('path')
+var fs = require('fs'); 
+  
+//可以分别设置http、https的访问端口号 
+var PORT = 3000; 
+var SSLPORT = 3030; 
+
+//使用nodejs自带的http、https模块 
+var http = require('http'); 
+var https = require('https'); 
+  
+//根据项目的路径导入生成的证书文件 
+var privateKey = fs.readFileSync(path.join(__dirname, './ssl/4151832_xn--kcr98bj2hba.top.key'), 'utf8'); 
+var certificate = fs.readFileSync(path.join(__dirname, './ssl/4151832_xn--kcr98bj2hba.top.pem'), 'utf8'); 
+var credentials = {key: privateKey, cert: certificate}; 
+  
+var httpServer = http.createServer(app); 
+var httpsServer = https.createServer(credentials, app); 
+  
+
+  
+//创建http服务器 
+httpServer.listen(PORT, function() { 
+  console.log('HTTP Server is running on: http://localhost:%s', PORT); 
+}); 
+  
+//创建https服务器 
+httpsServer.listen(SSLPORT, function() { 
+  console.log('HTTPS Server is running on: https://localhost:%s', SSLPORT); 
+});
+
+
+// app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
 
 /**
@@ -512,4 +545,3 @@ function signFun(data) {
     return data;
 }
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
