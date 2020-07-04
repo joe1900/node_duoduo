@@ -2,14 +2,12 @@
  * @Description: 
  * @Date: 2020-06-29 09:42:24
  * @LastEditors: Astronautics across the sea of stars
- * @LastEditTime: 2020-07-04 09:58:26
+ * @LastEditTime: 2020-07-04 14:23:30
  */
 const express = require('express')
 const app = express()
-
 const request = require('request')
 var md5 = require('md5-node');
-
 var path = require('path')
 var fs = require('fs'); 
   
@@ -34,15 +32,12 @@ var httpsServer = https.createServer(credentials, app);
 //创建http服务器 
 httpServer.listen(PORT, function() { 
   console.log('HTTP Server is running on: http://localhost:%s', PORT); 
-}); 
-  
+});   
 //创建https服务器 
 httpsServer.listen(SSLPORT, function() { 
   console.log('HTTPS Server is running on: https://localhost:%s', SSLPORT); 
 });
 
-
-// app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
 
 /**
@@ -80,8 +75,8 @@ app.all("*", function (req, res, next) {
  * @parameter offset = 第几页数据
  */
 app.get('/goods_list_query', (req, res) => {
-    if (!req.query.limit) { return res.send({ message: 'goods_id 参数错误' }) }
-    if (!req.query.offset) { return res.send({ message: 'goods_id 参数错误' }) }
+    if (!req.query.limit) { return res.send({ message: 'limit 参数错误' }) }
+    if (!req.query.offset) { return res.send({ message: 'offset 参数错误' }) }
     let url = `https://gw-api.pinduoduo.com/api/router`;
     let time = `${+(new Date())}`
     let data = {
@@ -485,10 +480,22 @@ app.get('/pdd_goods_opt_get', (req, res) => {
  * 30-物流评分击败同类店铺百分比降序，
  * 31-服务评分击败同类店铺百分比升序，
  * 32-服务评分击败同类店铺百分比降序
+ * 店铺类型
+ * merchant_type
+ * 店铺类型，
+ * 1-个人 ，
+ * 2-企业 ，
+ * 3-旗舰店 ，
+ * 4-专卖店 ，
+ * 5-专营店 ，
+ * 6-普通店
+ * 0-全部
  */
 app.get('/pdd_ddk_goods_search', (req, res) => {
-    if (!req.query.keyword) { return res.send({ message: 'keyword 参数错误' }) }
-    if (!req.query.page) { return res.send({ message: 'page 参数错误' }) }
+    if (!req.query.keyword) { return res.send({ message: 'keyword 参数错误（搜索关键词）' }) }
+    if (!req.query.page) { return res.send({ message: 'page 参数错误（页码）' }) }
+    if (!req.query.sort_type) { return res.send({ message: 'sort_type 参数错误（排序方式）' }) }
+    if (!req.query.merchant_type) { return res.send({ message: 'merchant_type 参数错误（店铺类型）' }) }
     let url = `https://gw-api.pinduoduo.com/api/router`;
     let time = `${+(new Date())}`
     let data = {
@@ -497,7 +504,8 @@ app.get('/pdd_ddk_goods_search', (req, res) => {
         client_id: client_id,
         keyword: req.query.keyword,
         with_coupon: 'true',
-        sort_type: 9,
+        sort_type: req.query.sort_type,
+        merchant_type: req.query.merchant_type,
         page: req.query.page,
         page_size: 30
     }
